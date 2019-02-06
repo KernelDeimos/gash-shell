@@ -28,9 +28,10 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 
 	cc := console.Console{
-		LineReader: lineReader,
-		LineParser: modules.LineParser_BasicStringsOnly,
-		Logger:     log.StandardLogger(),
+		LineReader:      lineReader,
+		LineParser:      modules.LineParser_BasicStringsOnly,
+		Logger:          log.StandardLogger(),
+		CommandExecutor: modules.CommandExecutor_ExecOS,
 	}
 
 	cc.DoREPL()

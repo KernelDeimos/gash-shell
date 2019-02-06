@@ -2,6 +2,7 @@ package console
 
 import (
 	"io"
+	"os"
 
 	"github.com/chzyer/readline"
 	log "github.com/sirupsen/logrus"
@@ -9,8 +10,9 @@ import (
 
 type Console struct {
 	// Interfaces
-	LineReader LineReaderI
-	LineParser LineParserI
+	LineReader      LineReaderI
+	LineParser      LineParserI
+	CommandExecutor CommandExecutorI
 
 	// Not interfaces (will eventually become interfaces)
 	Logger *log.Logger
@@ -58,6 +60,20 @@ func (c *Console) DoREPL() {
 		if cmd == "" {
 			c.Logger.Debug("[GASh] Skipping blank input...")
 			continue
+		}
+
+		cmdRun, cmdErr := c.CommandExecutor(cmd, args, Environment{
+			Stderr: os.Stderr,
+			Stdout: os.Stdout,
+			Stdin:  os.Stdin,
+		})
+
+		if cmdErr != nil {
+			c.Logger.Error(cmdErr)
+		}
+
+		if cmdRun {
+			c.Logger.Debug("[GASh] A command was run")
 		}
 	}
 

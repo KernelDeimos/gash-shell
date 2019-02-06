@@ -1,5 +1,9 @@
 package console
 
+import (
+	"io"
+)
+
 /*
 	This file contains definitions of the things the console
 	needs to function.
@@ -30,3 +34,19 @@ type LineReaderI interface {
 // understandable by the user.
 type LineParserI func(input string) (
 	string, []interface{}, error)
+
+type Environment struct {
+	Stdin  io.Reader
+	Stdout io.Writer
+	Stderr io.Writer
+}
+
+type CommandExecutorI func(
+	// Command and arguments
+	cmd string, args []interface{},
+	// Environment
+	env Environment,
+) (
+	actionPerformed bool,
+	err error,
+)
