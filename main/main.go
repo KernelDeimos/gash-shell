@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/chzyer/readline"
 	log "github.com/sirupsen/logrus"
-	"io"
+
+	"github.com/KernelDeimos/gash-shell/console"
+	"github.com/KernelDeimos/gash-shell/modules"
 )
 
 const (
@@ -23,36 +25,15 @@ func main() {
 
 	// Display the name of this shell and the version
 	log.Info("GASh: Go Again Shell - " + Version)
+	log.SetLevel(log.DebugLevel)
 
-	// TODO: Cooler prompt
-	promptText := "> "
-
-	for {
-		// TODO: Prompt will be re-written here
-		lineReader.SetPrompt(promptText)
-
-		line, err := lineReader.Readline()
-
-		// Handle error values returned by readline
-		if err != nil {
-			if err == io.EOF {
-				// EOF: End of input file or Ctrl+D; quit the terminal
-				log.Info("Goodbye")
-				return
-			} else if err == readline.ErrInterrupt {
-				// Interupt: SIGINT or Ctrl+C; print instructions for quitting
-				log.Info("Send EOF (Ctrl+D) to exit")
-			} else {
-				// Documentation for readline says there are no other error
-				// values, so print "this should never happen" if that happens
-				log.Error("this should never happen", err)
-			}
-			continue
-		}
-
-		// TODO: Everything
-		log.Print("You typed " + line)
+	cc := console.Console{
+		LineReader: lineReader,
+		LineParser: modules.LineParser_BasicStringsOnly,
+		Logger:     log.StandardLogger(),
 	}
+
+	cc.DoREPL()
 
 }
 
