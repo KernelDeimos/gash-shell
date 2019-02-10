@@ -9,21 +9,21 @@ import (
 // which require numbers, arrays, and objects as arguments will be
 // incompatible with this line parser.
 func LineParser_BasicStringsOnly(input string) (
-	cmd string, args []interface{}, err error) {
+	args []interface{}, err error) {
 
 	tokens := strings.Split(input, " ")
 	if len(tokens) == 0 {
 		//
-		return "", []interface{}{}, nil
+		return []interface{}{}, nil
 	}
 
 	// In Go you can't cast []string to []interface{}, so we need to perform
 	// the tedious task of copying the strings to the args list instead of
 	// just doing `args = tokens[1:]`
 	args = []interface{}{}
-	for _, token := range tokens[1:] {
+	for _, token := range tokens {
 		args = append(args, token)
 	}
 
-	return tokens[0], args, nil
+	return args, nil
 }

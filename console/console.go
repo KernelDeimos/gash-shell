@@ -57,13 +57,12 @@ func (c *Console) DoREPL() {
 			continue
 		}
 
-		cmd, args, err := c.LineParser(line)
+		args, err := c.LineParser(line)
 		if err != nil {
 			c.Logger.Error(err)
 		}
 
 		c.Logger.WithFields(log.Fields{
-			"cmd":  cmd,
 			"args": args,
 		}).Debug("command")
 
@@ -71,12 +70,12 @@ func (c *Console) DoREPL() {
 			c.Logger.Error("[GASh/LineParser]", err)
 		}
 
-		if cmd == "" {
+		if len(args) < 1 {
 			c.Logger.Debug("[GASh] Skipping blank input...")
 			continue
 		}
 
-		cmdRun, cmdErr := c.CommandExecutor(cmd, args, Environment{
+		cmdRun, cmdErr := c.CommandExecutor(args, Environment{
 			Stderr: os.Stderr,
 			Stdout: os.Stdout,
 			Stdin:  os.Stdin,

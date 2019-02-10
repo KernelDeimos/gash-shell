@@ -1,6 +1,7 @@
 package console
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -33,7 +34,7 @@ type LineReaderI interface {
 // invalid syntax. The error returned should be a message
 // understandable by the user.
 type LineParserI func(input string) (
-	string, []interface{}, error)
+	[]interface{}, error)
 
 type Environment struct {
 	Stdin  io.Reader
@@ -43,7 +44,7 @@ type Environment struct {
 
 type CommandExecutorI func(
 	// Command and arguments
-	cmd string, args []interface{},
+	args []interface{},
 	// Environment
 	env Environment,
 ) (

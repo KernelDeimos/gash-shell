@@ -14,13 +14,13 @@ type CommandExecutor_Sequential struct {
 }
 
 func (ce CommandExecutor_Sequential) Executor(
-	cmd string, args []interface{}, env console.Environment,
+	args []interface{}, env console.Environment,
 ) (bool, error) {
 	// TODO: should be error list instead of just last error
 	var lastError error
 	anyActionPerformed := false
 	for _, exe := range ce.Executors {
-		actionPerformed, err := exe(cmd, args, env)
+		actionPerformed, err := exe(args, env)
 		if err != nil {
 			if ce.StopOnError {
 				return actionPerformed, err
@@ -43,10 +43,12 @@ func (ce CommandExecutor_Sequential) Executor(
 }
 
 func CommandExecutor_ExecOS(
-	cmd string, args []interface{}, env console.Environment,
+	args []interface{}, env console.Environment,
 ) (bool, error) {
+	cmd := fmt.Sprint(args[0])
+
 	strargs := []string{}
-	for _, arg := range args {
+	for _, arg := range args[1:] {
 		// TODO: Maybe add some kind of arg-stringer interface?
 		strargs = append(strargs, fmt.Sprint(arg))
 	}
