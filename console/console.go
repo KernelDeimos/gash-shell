@@ -13,15 +13,29 @@ type Console struct {
 	LineReader      LineReaderI
 	LineParser      LineParserI
 	CommandExecutor CommandExecutorI
+	PromptWriter    PromptWriterI
 
 	// Not interfaces (will eventually become interfaces)
 	Logger *log.Logger
 }
 
 func (c *Console) DoREPL() {
+	ctx := ConsoleContext{
+		Variables: map[string]interface{}{},
+	}
+
 	for {
-		promptText := "> "
-		// TODO: Prompt will be re-written here
+		// Default variables
+		// TODO: refactor into an optional module
+		{
+			wd, _ := os.Getwd()
+			uid := os.Getuid()
+			ctx.Variables["cwd"] = wd
+			ctx.Variables["super"] = uid == 0
+		}
+
+		promptText := c.PromptWriter(ctx)
+
 		c.LineReader.SetPrompt(promptText)
 
 		line, err := c.LineReader.Readline()

@@ -50,3 +50,21 @@ type CommandExecutorI func(
 	actionPerformed bool,
 	err error,
 )
+
+type ConsoleContext struct {
+	Variables map[string]interface{}
+}
+
+func (api ConsoleContext) Getstring(key string) string {
+	value, _ := api.Variables[key]
+	return fmt.Sprint(value)
+}
+
+func (api ConsoleContext) Is(key string) bool {
+	value, _ := api.Variables[key].(bool)
+	return value
+}
+
+type PromptWriterI func(
+	ctx ConsoleContext,
+) string

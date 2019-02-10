@@ -32,6 +32,7 @@ func main() {
 		LineParser:      modules.LineParser_BasicStringsOnly,
 		Logger:          log.StandardLogger(),
 		CommandExecutor: modules.CommandExecutor_ExecOS,
+		PromptWriter:    modules.PromptWriter_HardcodedBashLike,
 	}
 
 	cc.DoREPL()
