@@ -2,6 +2,35 @@
 There has certainly already been at least one shell written in go by now
 (source: it's 2019), so GASh seemed like an appropriate name for this.
 
+## Important Notes
+- REGRESSIONS! This is version 0 of GASh, and therefore changes and regressions
+  are expected to happen frequently.
+
+- GASh, by design, is not a POSIX-compliant shell in its default configuration.
+  However, making a POSIX-compliant GASh configuration is a long-term
+  development goal.
+
+## When will the major version be changed?
+
+### Version 1.0.0
+- Configuration for prompt 
+- Configuration for which console modules are used
+- If a prompt writer takes too long, a fallback prompt will be displayed
+- Pipes and redirects are fully supported
+- Background tasks are fully supported
+- GASh is stable enough for everyday use
+
+### Version 2.0.0
+- Scriptable plugin system
+- Ability to emulate other shells by replacing modules
+- (not requited for 2.0.0 but...) Build-your-own-GASh tutorial exists
+
+### Version 3.0.0
+- POSIX-compliant mode
+
+## What is a console module?
+`// TODO: this`
+
 ## Ideas for Features
 
 Idea contributions are welcome! (provided they're cool enough)
