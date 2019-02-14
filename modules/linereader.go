@@ -2,6 +2,8 @@ package modules
 
 import (
 	"strings"
+
+	"github.com/KernelDeimos/gottagofast/toolparse"
 )
 
 // LineParser_BasicStringsOnly is a line parser that simply splits the input
@@ -26,4 +28,11 @@ func LineParser_BasicStringsOnly(input string) (
 	}
 
 	return args, nil
+}
+
+// LineParser_SimpleBrackets is a line parser which allows for nested lists,
+// similar to LISP syntax.
+func LineParser_SimpleBrackets(input string) (
+	args []interface{}, err error) {
+	return toolparse.ParseListSimple(input)
 }
