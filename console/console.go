@@ -1,6 +1,7 @@
 package console
 
 import (
+	"errors"
 	"io"
 	"os"
 
@@ -21,7 +22,8 @@ type Console struct {
 
 func (c *Console) DoREPL() {
 	ctx := ConsoleContext{
-		Variables: map[string]interface{}{},
+		Variables:              map[string]interface{}{},
+		DefaultCommandExecutor: c.CommandExecutor,
 	}
 
 	for {
@@ -76,9 +78,13 @@ func (c *Console) DoREPL() {
 		}
 
 		cmdRun, cmdErr := c.CommandExecutor(args, Environment{
-			Stderr: os.Stderr,
-			Stdout: os.Stdout,
-			Stdin:  os.Stdin,
+			Stderr:  os.Stderr,
+			Stdout:  os.Stdout,
+			Stdin:   os.Stdin,
+			Context: ctx,
+			Delegate: func([]interface{}, Environment) (bool, error) {
+				return false, errors.New("[GASh] No command found")
+			},
 		})
 
 		if cmdErr != nil {

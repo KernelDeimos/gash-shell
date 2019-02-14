@@ -37,9 +37,13 @@ type LineParserI func(input string) (
 	[]interface{}, error)
 
 type Environment struct {
-	Stdin  io.Reader
-	Stdout io.Writer
-	Stderr io.Writer
+	Stdin   io.Reader
+	Stdout  io.Writer
+	Stderr  io.Writer
+	Context ConsoleContext
+
+	// "Delegate" passes a command to the next executor in the chain
+	Delegate CommandExecutorI
 }
 
 type CommandExecutorI func(
@@ -54,6 +58,12 @@ type CommandExecutorI func(
 
 type ConsoleContext struct {
 	Variables map[string]interface{}
+
+	// Note: DefaultCommandExecutor should never be used as a fallback executor!
+	//       More accurately, an executor that calls DefaultCommandExecutor
+	//       should be aware that it exists somewhere in the executor chain
+	//       and prevent infinite loops accordingly.
+	DefaultCommandExecutor CommandExecutorI
 }
 
 func (api ConsoleContext) Getstring(key string) string {
