@@ -61,6 +61,31 @@ func (ce CommandExecutor_ChainMail) Executor(
 	return anyActionPerformed, lastError
 }
 
+type CommandExecutor_LookupTable struct {
+	Table map[string]console.CommandExecutorI
+}
+
+func (ce CommandExecutor_LookupTable) Executor(
+	args []interface{}, env console.Environment,
+) (bool, error) {
+	if len(args) < 1 {
+		return false, nil
+	}
+	cmdName, isString := args[0].(string)
+	if !isString {
+		// TODO: configurable behaviour: fallthrough, error, delegate
+		return false, nil
+	}
+
+	exe, exists := ce.Table[cmdName]
+	if !exists {
+		// TODO: configurable behaviour: fallthrough, error, delegate
+		return false, nil
+	}
+
+	return exe(args[1:], env)
+}
+
 func CommandExecutor_ExecPipe(
 	args []interface{}, env console.Environment,
 ) (bool, error) {
