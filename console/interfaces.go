@@ -44,6 +44,14 @@ type Environment struct {
 
 	// "Delegate" passes a command to the next executor in the chain
 	Delegate CommandExecutorI
+
+	Closer io.Closer
+}
+
+func (env Environment) Close() {
+	if env.Closer != nil {
+		env.Closer.Close()
+	}
 }
 
 type CommandExecutorI func(

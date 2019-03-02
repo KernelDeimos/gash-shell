@@ -3,9 +3,12 @@ package modules
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os/exec"
+	"sync"
 
 	"github.com/KernelDeimos/gash-shell/console"
+	"github.com/KernelDeimos/gash-shell/utilerr"
 	"github.com/sirupsen/logrus"
 )
 
@@ -56,6 +59,59 @@ func (ce CommandExecutor_ChainMail) Executor(
 		}
 	}
 	return anyActionPerformed, lastError
+}
+
+func CommandExecutor_ExecPipe(
+	args []interface{}, env console.Environment,
+) (bool, error) {
+	// TODO: report error for invalid type
+	left := args[0].([]interface{})
+	righ := args[1].([]interface{})
+
+	eleft := env
+	erigh := env
+
+	var a *io.PipeReader
+	var b *io.PipeWriter
+	a, b = io.Pipe()
+
+	eleft.Stdout = b
+	eleft.Closer = b
+
+	erigh.Stdin = a
+
+	errs := utilerr.NewCompositeError(2)
+	acts := []*bool{}
+	for i := 0; i < 2; i++ {
+		var a bool
+		acts = append(acts, &a)
+	}
+
+	wg := &sync.WaitGroup{}
+	start := func(
+		args []interface{}, env console.Environment, err *error, act *bool,
+	) {
+		wg.Add(1)
+		go func() {
+			*act, *err = env.Delegate(args, env)
+			env.Close()
+			wg.Done()
+		}()
+	}
+
+	start(left, eleft, errs.GetRef(0), acts[0])
+	start(righ, erigh, errs.GetRef(1), acts[1])
+
+	wg.Wait()
+
+	var actionPerformed bool
+	for _, ap := range acts {
+		if *ap {
+			actionPerformed = true
+		}
+	}
+
+	return actionPerformed, errs.GetError()
 }
 
 func CommandExecutor_ExecOS(
