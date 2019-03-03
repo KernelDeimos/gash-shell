@@ -28,11 +28,22 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 
 	cc := console.Console{
-		LineReader:      lineReader,
-		LineParser:      modules.LineParser_BasicStringsOnly,
-		Logger:          log.StandardLogger(),
-		CommandExecutor: modules.CommandExecutor_ExecOS,
-		PromptWriter:    modules.PromptWriter_HardcodedBashLike,
+		LineReader: lineReader,
+		LineParser: modules.LineParser_SimpleBrackets,
+		Logger:     log.StandardLogger(),
+		CommandExecutor: modules.CommandExecutor_ChainMail{
+			StopOnAction: true,
+			StopOnError:  true,
+			Executors: []console.CommandExecutorI{
+				modules.CommandExecutor_LookupTable{
+					Table: map[string]console.CommandExecutorI{
+						"pipe": modules.CommandExecutor_ExecPipe,
+					},
+				}.Executor,
+				modules.CommandExecutor_ExecOS,
+			},
+		}.Executor,
+		PromptWriter: modules.PromptWriter_HardcodedBashLike,
 	}
 
 	cc.DoREPL()
